@@ -12,7 +12,7 @@ class Model {
         Edge e = new Edge(startPoint, endPoint);
         edg.add(e);
     }
-
+    //xd
     void start() {
         edgePositioning();
         regularisation();
