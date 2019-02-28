@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class Controller {
-    Model model;
+    private Model model;
 
     void add(Point p) {
         model.points.add(p);
@@ -26,11 +26,14 @@ public class Controller {
         return model.edg;
     }
 
-    void addEdge(int l, int r) {
+    void addEdge(int l, int r) {                                                 //check for unic
         if (l<r)  model.addEdge(l,r);
         else{
             model.addEdge(r,l);
         }
+    }
+    void start() {
+            model.start();
     }
 
     public static void main(String[] args) {
@@ -44,8 +47,8 @@ public class Controller {
         Controller controller = new Controller();
         controller.model = new Model();
 
-        MouseLocation mouseLocation = new MouseLocation(controller);
-        frame.add(mouseLocation);
+        Drawer drawer = new Drawer(controller);
+        frame.add(drawer);
         frame.setVisible(true);
     }
 
