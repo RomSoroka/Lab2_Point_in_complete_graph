@@ -8,6 +8,15 @@ public class Edge {
     int weight;
     Color color;
 
+    @Override
+    public String toString() {
+        return "Edge{" +
+                "start=" + start +
+                ", end=" + end +
+                ", weight=" + weight +
+                '}';
+    }
+
     Edge(Point start, Point end) {
         this.start = start;
         this.end = end;

@@ -18,15 +18,15 @@ public class Drawer extends JPanel {
     private ArrayList<Point> arrPoints = new ArrayList<Point>();
 
     DrawState state = DrawState.PLACE_POINTS;
-//hello
+
     JTextField left;
     JTextField right;
 
 //    {
-//        arrPoints.add(new Point(100, 100));
-//        arrPoints.add(new Point(300, 100));
-//        arrPoints.add(new Point(300, 300));
-//        arrPoints.add(new Point(100, 300));
+//        arrPoints.addPoint(new Point(100, 100));
+//        arrPoints.addPoint(new Point(300, 100));
+//        arrPoints.addPoint(new Point(300, 300));
+//        arrPoints.addPoint(new Point(100, 300));
 //        isPointCheckModeFlag = true;
 //        circle = new Point(100, 300);
 //        isPointInside = pnpoly();
@@ -84,7 +84,7 @@ public class Drawer extends JPanel {
         this.add(newEdgeButton);
 
         JButton startButton = new JButton("Start");
-        newEdgeButton.setBounds(10, 40, 80, 20);
+        startButton.setBounds(10, 40, 80, 20);
 
         ActionListener startAction = (ActionEvent e) -> {
             {
@@ -104,7 +104,7 @@ public class Drawer extends JPanel {
                     x = e.getX();
                     y = e.getY();
                     Point p = new Point(x, y);
-                    controller.add(p);
+                    controller.addPoint(p);
                 } else {
                     x = e.getX();
                     y = e.getY();
@@ -125,10 +125,7 @@ public class Drawer extends JPanel {
         for (Point p : points) {
             g.fillOval(p.getX() - diametr / 2, p.getY() - diametr / 2, diametr, diametr);
         }
-
-        if (state == DrawState.CONNECT_EDGES) {
-            drawGraph(g);
-        }
+        drawGraph(g);
 
 
 //        if (!isPointCheckModeFlag) {

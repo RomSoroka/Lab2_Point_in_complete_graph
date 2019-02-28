@@ -1,6 +1,5 @@
 package com.company;
 
-
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
@@ -9,13 +8,13 @@ import java.util.Collections;
 public class Controller {
     private Model model;
 
-    void add(Point p) {
+    void addPoint(Point p) {
         model.points.add(p);
     }
 
     void sortPoints() {
         Collections.sort(model.points);
-        System.out.println(model.points);
+//        System.out.println(model.points);
     }
 
     public ArrayList<Point> getPoints() {
@@ -28,7 +27,7 @@ public class Controller {
 
     void addEdge(int l, int r) {                                                 //check for unic
         if (l<r)  model.addEdge(l,r);
-        else{
+        else {
             model.addEdge(r,l);
         }
     }
@@ -52,14 +51,9 @@ public class Controller {
         frame.setVisible(true);
     }
 
-    //TODO
-    public void regularize() { }
-
-    public void makeChainsAndTree() {
-
-    }
 
     public void locatePoint(Point p) {
+
     }
 }
 

@@ -33,7 +33,23 @@ public class Point implements Comparable<Point> {
 
     @Override
     public String toString() {
-        return "Point{" + "x=" + x + ", y=" + y + "}\n";
+        String inStr, outStr;
+        if (out.isEmpty())
+            outStr = "EMPTY";
+        else
+            outStr = out.toString();
+
+        if (this.in.isEmpty())
+            inStr = "EMPTY";
+        else
+            inStr = in.toString();
+
+        return "Point{" +
+                "x=" + x +
+                ", y=" + y +
+                ", in=" + inStr +
+                ", out=" + outStr +
+                "}\n";
     }
 
     @Override
