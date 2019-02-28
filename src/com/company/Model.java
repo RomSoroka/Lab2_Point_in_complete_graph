@@ -2,7 +2,7 @@ package com.company;
 
 import java.util.ArrayList;
 
-public class Model {
+class Model {
     ArrayList<Point> points = new ArrayList<>();
     ArrayList<Edge> edg = new ArrayList<>();
 
@@ -13,7 +13,7 @@ public class Model {
         edg.add(e);
     }
 
-    public void start() {
+    void start() {
         edgePositioning();
         regularisation();
     }
@@ -50,36 +50,32 @@ public class Model {
             edges = currEdge.getEnd().in;
             chechingPoint = currEdge.getStart();
         }
+        if (edges.isEmpty()) return 0;
         rightBorder = edges.size();
 
-        if (edges.isEmpty()) return 0;
-        else {
-            while (rightBorder != leftBorder) {
-                Point middle;
-                if (isStart) middle = edges.get((rightBorder + leftBorder) / 2).getEnd();
-                else middle = edges.get((rightBorder + leftBorder) / 2).getStart();
-                if (middle.getX() > chechingPoint.getX()) {
-                    rightBorder = (rightBorder + leftBorder) / 2;
-                } else {
-                    leftBorder = (rightBorder + leftBorder) / 2;
-                }
+        while (rightBorder - leftBorder > 1) {
+            Point middle;
+            if (isStart) middle = edges.get((rightBorder + leftBorder) / 2).getEnd();
+            else middle = edges.get((rightBorder + leftBorder) / 2).getStart();
+            if (chechingPoint.getX() < middle.getX()) {
+                rightBorder = (rightBorder + leftBorder) / 2;
+            } else {
+                leftBorder = (rightBorder + leftBorder) / 2;
             }
-            Point foundPoint;
-            if (isStart) {
-              foundPoint=edges.get(rightBorder).getEnd();
-            }
-            else
-            {
-                foundPoint=edges.get(rightBorder).getStart();
-            }
-            if(foundPoint.getX()>chechingPoint.getX())
-            {
-                return rightBorder;
-            }
-            else {
-                return rightBorder+1;
-            }
-
         }
+        Point foundPoint;
+        if (isStart) foundPoint = edges.get(rightBorder).getEnd();
+        else foundPoint = edges.get(rightBorder).getStart();
+        if (foundPoint.getX() > chechingPoint.getX() && rightBorder - leftBorder == 1) {
+            if (isStart) foundPoint = edges.get(leftBorder).getEnd();
+            else foundPoint = edges.get(leftBorder).getStart();
+        }
+        if (foundPoint.getX() > chechingPoint.getX()) {
+            return rightBorder;
+        } else {
+            return rightBorder + 1;
+        }
+
     }
+
 }
