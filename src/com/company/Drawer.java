@@ -18,7 +18,7 @@ public class Drawer extends JPanel {
     private ArrayList<Point> arrPoints = new ArrayList<Point>();
 
     DrawState state = DrawState.PLACE_POINTS;
-
+//hello
     JTextField left;
     JTextField right;
 
