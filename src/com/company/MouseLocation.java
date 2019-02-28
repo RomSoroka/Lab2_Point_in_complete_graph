@@ -13,7 +13,7 @@ public class MouseLocation extends JPanel {
     Controller controller;
     private boolean isPointCheckModeFlag = false;
     private boolean isPointInside = false;
-    private Point circle;
+    private Point pointToCheck;
     private int diametr = 5;
     private ArrayList<Point> arrPoints = new ArrayList<Point>();
 
@@ -28,7 +28,7 @@ public class MouseLocation extends JPanel {
 //        arrPoints.add(new Point(300, 300));
 //        arrPoints.add(new Point(100, 300));
 //        isPointCheckModeFlag = true;
-//        circle = new Point(100, 300);
+//        pointToCheck = new Point(100, 300);
 //        isPointInside = pnpoly();
 //    }
 
@@ -40,7 +40,7 @@ public class MouseLocation extends JPanel {
         button.setBounds(10, 10, 150, 20);
 
         JPanel panel = this;                                                                //govnokod?
-        ActionListener click = new ActionListener() {
+        ActionListener closeAndOrderAction = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 state = DrawState.CONNECT_EDGES;
@@ -57,7 +57,7 @@ public class MouseLocation extends JPanel {
                 repaint();
             }
         };
-        button.addActionListener(click);
+        button.addActionListener(closeAndOrderAction);
         this.add(button);
 
         left = new JTextField("");
@@ -88,23 +88,51 @@ public class MouseLocation extends JPanel {
         newEdgeButton.addActionListener(addEdgeAction);
         this.add(newEdgeButton);
 
+        JButton edgesDone = new JButton("Done");
+        edgesDone.setBounds(370, 10, 50, 20);
 
+        //regularize, make chains, make tree with chains
+        ActionListener edgesDoneAction = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                state = DrawState.LOCALIZATION;
+                controller.regularize();
+                controller.makeChainsAndTree();
+                for (int i = 0; i < 4; i++) {
+                    panel.getComponent(i).setEnabled(false);
+                }
+                repaint();
+            }
+        };
+        edgesDone.addActionListener(edgesDoneAction);
+        this.add(edgesDone);
 
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                int x, y;
-                if (!isPointCheckModeFlag) {
-                    x = e.getX();
-                    y = e.getY();
-                    Point p = new Point(x, y);
+                int x = e.getX(), y = e.getY();
+                Point p = new Point(x, y);
+
+                if (state == DrawState.PLACE_POINTS) {
                     controller.add(p);
+                } else if (state == DrawState.CONNECT_EDGES) {
+
                 } else {
-                    x = e.getX();
-                    y = e.getY();
-                    circle = new Point(x, y);
-                    isPointInside = pnpoly();
+                    controller.locatePoint(p);
+                    pointToCheck = p;
                 }
+
+//                if (!isPointCheckModeFlag) {
+//                    x = e.getX();
+//                    y = e.getY();
+//                    Point p = new Point(x, y);
+//                    controller.add(p);
+//                } else {
+//                    x = e.getX();
+//                    y = e.getY();
+//                    pointToCheck = new Point(x, y);
+//                    isPointInside = pnpoly();
+//                }
                 repaint();
             }
         });
@@ -114,14 +142,11 @@ public class MouseLocation extends JPanel {
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        ArrayList<Point> points = controller.getPoints();
-        g.setColor(Color.BLUE);
-        for (Point p : points) {
-            g.fillOval(p.getX() - -diametr / 2, p.getY() - -diametr / 2, diametr, diametr);
-        }
+        drawPoints(g);
+        drawEdges(g);
 
-        if (state == DrawState.CONNECT_EDGES) {
-            drawGraph(g);
+        if ((state == DrawState.LOCALIZATION) && (pointToCheck != null)) {
+            drawPointToCheck(g);
         }
 
 
@@ -133,14 +158,27 @@ public class MouseLocation extends JPanel {
 //        {
 //            drawClosedPolygonalChain(g);
 //
-//            if(circle != null){
+//            if(pointToCheck != null){
 //                drawCircle(g);
 //            }
 //        }
 
     }
 
-    private void drawGraph(Graphics g) {
+    private void drawPointToCheck(Graphics g) {
+        g.setColor(Color.BLACK);
+        g.fillOval(pointToCheck.getX() - diametr / 2, pointToCheck.getY() - diametr / 2, diametr, diametr);
+    }
+
+    private void drawPoints(Graphics g) {
+        ArrayList<Point> points = controller.getPoints();
+        g.setColor(Color.BLUE);
+        for (Point p : points) {
+            g.fillOval(p.getX() - diametr / 2, p.getY() - diametr / 2, diametr, diametr);
+        }
+    }
+
+    private void drawEdges(Graphics g) {
         ArrayList<Edge> edges = controller.getEdges();
         for (Edge currEdge:edges) {
             g.setColor(Color.ORANGE);
@@ -150,27 +188,8 @@ public class MouseLocation extends JPanel {
 
     }
 
-    private void drawClosedPolygonalChain(Graphics g) {
-        if (arrPoints.size() > 1) {
-            Point previousPoint = arrPoints.get(0);
-            for (int i = 1; i < arrPoints.size(); i++) {
-                Point currPoint = arrPoints.get(i);
-                g.setColor(Color.ORANGE);
-                g.drawLine(previousPoint.getX(), previousPoint.getY(), currPoint.getX(), currPoint.getY());
-                previousPoint = currPoint;
-            }
-            previousPoint = arrPoints.get(0);
-            Point lastPoint = arrPoints.get(arrPoints.size() - 1);
-            g.setColor(Color.ORANGE);
-            g.drawLine(previousPoint.getX(), previousPoint.getY(), lastPoint.getX(), lastPoint.getY());
-        }
-    }
 
-    private void drawCircle(Graphics g) {
-        if (isPointInside) g.setColor(Color.GREEN);
-        else g.setColor(Color.RED);
-        g.fillOval(circle.getX() - diametr / 2, circle.getY() - diametr / 2, diametr, diametr);
-    }
+
 
     private boolean pnpoly() {
         boolean c = false;
@@ -178,7 +197,7 @@ public class MouseLocation extends JPanel {
             int yi = arrPoints.get(i).getY();
             if (
 
-                    (((arrPoints.get(i).getY() <= circle.getY()) && (circle.getY() < arrPoints.get(j).getY())) || ((arrPoints.get(j).getY() <= circle.getY()) && (circle.getY() < arrPoints.get(i).getY()))) && (((arrPoints.get(j).getX() - arrPoints.get(i).getX()) * (circle.getY() - arrPoints.get(i).getY()) / (arrPoints.get(j).getY() - arrPoints.get(i).getY()) + arrPoints.get(i).getX()) < circle.getX()))
+                    (((arrPoints.get(i).getY() <= pointToCheck.getY()) && (pointToCheck.getY() < arrPoints.get(j).getY())) || ((arrPoints.get(j).getY() <= pointToCheck.getY()) && (pointToCheck.getY() < arrPoints.get(i).getY()))) && (((arrPoints.get(j).getX() - arrPoints.get(i).getX()) * (pointToCheck.getY() - arrPoints.get(i).getY()) / (arrPoints.get(j).getY() - arrPoints.get(i).getY()) + arrPoints.get(i).getX()) < pointToCheck.getX()))
                 c = !c;
         }
         return c;

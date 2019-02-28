@@ -38,7 +38,7 @@ public class Controller {
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
-        Dimension sSize = new Dimension(400, 500);
+        Dimension sSize = new Dimension(500, 500);
         frame.setSize(sSize);
 
         Controller controller = new Controller();
@@ -49,6 +49,14 @@ public class Controller {
         frame.setVisible(true);
     }
 
+    //TODO
+    public void regularize() { }
 
+    public void makeChainsAndTree() {
+
+    }
+
+    public void locatePoint(Point p) {
+    }
 }
 
