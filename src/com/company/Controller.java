@@ -14,7 +14,6 @@ public class Controller {
 
     void sortPoints() {
         Collections.sort(model.points);
-//        System.out.println(model.points);
     }
 
     public ArrayList<Point> getPoints() {
@@ -26,11 +25,12 @@ public class Controller {
     }
 
     void addEdge(int l, int r) {                                                 //check for unic
-        if (l<r)  model.addEdge(l,r);
-        else {
+        if (l < r)  model.addEdge(l,r);
+        else if (l > r) {
             model.addEdge(r,l);
-        }
+        } else return;
     }
+    
     void start() {
             model.start();
     }

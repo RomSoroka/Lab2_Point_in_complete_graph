@@ -22,79 +22,17 @@ public class Drawer extends JPanel {
     JTextField left;
     JTextField right;
 
-//    {
-//        arrPoints.addPoint(new Point(100, 100));
-//        arrPoints.addPoint(new Point(300, 100));
-//        arrPoints.addPoint(new Point(300, 300));
-//        arrPoints.addPoint(new Point(100, 300));
-//        isPointCheckModeFlag = true;
-//        circle = new Point(100, 300);
-//        isPointInside = pnpoly();
-//    }
-
     public Drawer(Controller controller) {
         this.controller = controller;
-
         this.setLayout(null);
-        JButton button = new JButton("Close");
-        button.setBounds(10, 10, 150, 20);
 
-        JPanel panel = this;                                                                //govnokod?
-        ActionListener click = (ActionEvent e) -> {
-            state = DrawState.CONNECT_EDGES;
-            controller.sortPoints();
-            ArrayList<Point> points = controller.getPoints();
-            for (int i = 0; i < points.size(); i++) {
-                JLabel l = new JLabel(String.valueOf(i));
-                Point p = points.get(i);
-                l.setBounds(p.getX(), p.getY() + diametr, 20, 20);
-                panel.add(l);
-            }
+        addCloseButton(controller);
 
-            isPointCheckModeFlag = true;
-            repaint();
+        addTextFields();
 
-        };
-        button.addActionListener(click);
-        this.add(button);
+        addNewEdgeButton(controller);
 
-        left = new JTextField("");
-        right = new JTextField("");
-        left.setBounds(200, 10, 40, 20);
-        right.setBounds(250, 10, 40, 20);
-        this.add(left);
-        this.add(right);
-
-        JButton newEdgeButton = new JButton("Add");
-        newEdgeButton.setBounds(300, 10, 50, 20);
-
-        ActionListener addEdgeAction = (ActionEvent e) -> {
-            int l, r;
-            try {
-                l = Integer.valueOf(left.getText());
-                r = Integer.valueOf(right.getText());
-            } catch (NumberFormatException exe) {
-                System.out.println("Not a number");
-                return;
-            }
-            controller.addEdge(l, r);
-            repaint();
-        };
-        newEdgeButton.addActionListener(addEdgeAction);
-        this.add(newEdgeButton);
-
-        JButton startButton = new JButton("Start");
-        startButton.setBounds(10, 40, 80, 20);
-
-        ActionListener startAction = (ActionEvent e) -> {
-            {
-                controller.start();
-                repaint();
-            }
-        };
-        startButton.addActionListener(startAction);
-        this.add(startButton);
-
+        addStartButton(controller);
 
         addMouseListener(new MouseAdapter() {
             @Override
@@ -123,23 +61,78 @@ public class Drawer extends JPanel {
         ArrayList<Point> points = controller.getPoints();
         g.setColor(Color.BLUE);
         for (Point p : points) {
-            g.fillOval(p.getX() - diametr / 2, p.getY() - diametr / 2, diametr, diametr);
+            g.fillOval(p.getX() - diametr / 2 ,p.getY() - diametr / 2, diametr, diametr);
         }
         drawGraph(g);
+    }
 
+    /* ---------------PRIVTE FUNCTIONS----------------- */
 
-//        if (!isPointCheckModeFlag) {
-//            drawPolygonalChain(g);
-//        }
-//        else
-//        {
-//            drawClosedPolygonalChain(g);
-//
-//            if(circle != null){
-//                drawCircle(g);
-//            }
-//        }
+    private void addStartButton(Controller controller) {
+        JButton startButton = new JButton("Start");
+        startButton.setBounds(10, 40, 80, 20);
 
+        ActionListener startAction = (ActionEvent e) -> {
+            {
+                controller.start();
+                repaint();
+            }
+        };
+        startButton.addActionListener(startAction);
+        this.add(startButton);
+    }
+
+    private void addNewEdgeButton(Controller controller) {
+        JButton newEdgeButton = new JButton("Add");
+        newEdgeButton.setBounds(300, 10, 50, 20);
+
+        ActionListener addEdgeAction = (ActionEvent e) -> {
+            int l, r;
+            try {
+                l = Integer.valueOf(left.getText());
+                r = Integer.valueOf(right.getText());
+            } catch (NumberFormatException exe) {
+                System.out.println("Not a number");
+                return;
+            }
+            controller.addEdge(l, r);
+            repaint();
+        };
+        newEdgeButton.addActionListener(addEdgeAction);
+        this.add(newEdgeButton);
+    }
+
+    private void addTextFields() {
+        left = new JTextField("");
+        right = new JTextField("");
+        left.setBounds(200, 10, 40, 20);
+        right.setBounds(250, 10, 40, 20);
+        this.add(left);
+        this.add(right);
+    }
+
+    private void addCloseButton(Controller controller) {
+        JButton button = new JButton("Close");
+        button.setBounds(10, 10, 150, 20);
+
+        JPanel panel = this;                                                                //govnokod?
+        ActionListener click = (ActionEvent e) -> {
+            state = DrawState.CONNECT_EDGES;
+            controller.sortPoints();
+            ArrayList<Point> points = controller.getPoints();
+            for (int i = 0; i < points.size(); i++) {
+                JLabel l = new JLabel(String.valueOf(i));
+                Point p = points.get(i);
+                l.setBounds(p.getX(), p.getY() + diametr, 20, 20);
+                panel.add(l);
+            }
+
+            isPointCheckModeFlag = true;
+            repaint();
+
+        };
+        button.addActionListener(click);
+        this.add(button);
     }
 
     private void drawGraph(Graphics g) {
@@ -150,28 +143,6 @@ public class Drawer extends JPanel {
                     currEdge.getEnd().getX(), currEdge.getEnd().getY());
         }
 
-    }
-
-    private void drawClosedPolygonalChain(Graphics g) {
-        if (arrPoints.size() > 1) {
-            Point previousPoint = arrPoints.get(0);
-            for (int i = 1; i < arrPoints.size(); i++) {
-                Point currPoint = arrPoints.get(i);
-                g.setColor(Color.ORANGE);
-                g.drawLine(previousPoint.getX(), previousPoint.getY(), currPoint.getX(), currPoint.getY());
-                previousPoint = currPoint;
-            }
-            previousPoint = arrPoints.get(0);
-            Point lastPoint = arrPoints.get(arrPoints.size() - 1);
-            g.setColor(Color.ORANGE);
-            g.drawLine(previousPoint.getX(), previousPoint.getY(), lastPoint.getX(), lastPoint.getY());
-        }
-    }
-
-    private void drawCircle(Graphics g) {
-        if (isPointInside) g.setColor(Color.GREEN);
-        else g.setColor(Color.RED);
-        g.fillOval(circle.getX() - diametr / 2, circle.getY() - diametr / 2, diametr, diametr);
     }
 
     private boolean pnpoly() {

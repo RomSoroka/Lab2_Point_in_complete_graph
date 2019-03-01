@@ -10,11 +10,11 @@ public class Edge {
 
     @Override
     public String toString() {
-        return "Edge{" +
-                "start=" + start +
-                ", end=" + end +
+        return "\n\t\tEdge{" +
+                "start: {x=" + start.getX() + ", y=" + start.getY() + "}" +
+                ", end: {x=" + end.getX() + ", y=" + end.getY() + "}" +
                 ", weight=" + weight +
-                '}';
+                "}\n";
     }
 
     Edge(Point start, Point end) {

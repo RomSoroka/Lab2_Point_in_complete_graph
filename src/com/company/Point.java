@@ -49,7 +49,7 @@ public class Point implements Comparable<Point> {
                 ", y=" + y +
                 ", in=" + inStr +
                 ", out=" + outStr +
-                "}\n";
+                "}\n\n";
     }
 
     @Override
