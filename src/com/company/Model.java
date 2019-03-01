@@ -22,6 +22,7 @@ class Model {
         System.out.println(points);
         regularisation();
 
+
     }
 
     private void regularisation() {

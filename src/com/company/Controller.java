@@ -64,13 +64,15 @@ public class Controller {
         controller.addPoint(new Point(150, 80));
         controller.addPoint(new Point(400, 150));
 
+        controller.sortPoints();
+
         controller.addEdge(0, 1);
         controller.addEdge(0, 2);
-        controller.addEdge(0, 3);
         controller.addEdge(0, 4);
         controller.addEdge(4, 5);
         controller.addEdge(3, 5);
-        controller.addEdge(3, 2);
+        controller.addEdge(1,3);
+        controller.addEdge(5, 2);
         controller.addEdge(1, 2);
         controller.addEdge(1, 4);
         controller.addEdge(1, 5);
