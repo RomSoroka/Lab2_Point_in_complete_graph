@@ -11,7 +11,7 @@ public class Edge {
     @Override
     public String toString() {
         return "\n\t\tEdge{" +
-                "from: " + start.arrayNumber + "to: " + end.arrayNumber +
+                "from: " + start.arrayNumber + " to: " + end.arrayNumber +
                 ", weight=" + weight +
                 "}\n";
     }
