@@ -7,6 +7,7 @@ public class Point implements Comparable<Point> {
     private int y;
     ArrayList<Edge> in;
     ArrayList<Edge> out;
+    int arrayNumber = -1;
 
     public int getX() {
         return x;
@@ -44,7 +45,7 @@ public class Point implements Comparable<Point> {
         else
             inStr = in.toString();
 
-        return "Point{" +
+        return "Point#" + arrayNumber + "{" +
                 "x=" + x +
                 ", y=" + y +
                 ", in=" + inStr +

@@ -6,27 +6,6 @@ class Model {
     ArrayList<Point> points = new ArrayList<>();
     ArrayList<Edge> edg = new ArrayList<>();
 
-    {
-        points.add(new Point(100, 300));
-        points.add(new Point(220, 120));
-        points.add(new Point(220, 220));
-        points.add(new Point(330, 400));
-        points.add(new Point(150, 80));
-        points.add(new Point(400, 150));
-
-        addEdge(0, 1);
-        addEdge(0, 2);
-        addEdge(0, 3);
-        addEdge(0, 4);
-        addEdge(4, 5);
-        addEdge(3, 5);
-        addEdge(3, 2);
-        addEdge(1, 2);
-        addEdge(1, 4);
-        addEdge(1, 5);
-    }
-
-
     void addEdge(int start, int end) {
         Point startPoint = points.get(start);
         Point endPoint = points.get(end);
