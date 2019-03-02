@@ -13,15 +13,42 @@ class Model {
         edg.add(e);
     }
 
+
     void start() {
-        edgePositioning();
+        addEdgesToPoints();
         regularisation();
+        weightBalancing();
+        System.out.println(points);
+    }
+
+    private void weightBalancing() {
+        //Top to bottom
+        for (int i = 1; i < points.size() - 1; i++) {
+            Point currentPoint = points.get(i);
+            int wIN = currentPoint.in.stream().mapToInt(edg -> edg.weight).sum();
+            int vOUT = currentPoint.out.size();
+            if (wIN > vOUT) {
+                currentPoint.out.get(0).weight = wIN - vOUT + 1;
+            }
+        }
+
+        //Bottom to top
+        for (int i = points.size() - 2; i > 0; i--) {
+            Point currentPoint = points.get(i);
+            int wOUT = currentPoint.out.stream().mapToInt(edg -> edg.weight).sum();
+            int wIN = currentPoint.in.stream().mapToInt(edg -> edg.weight).sum();
+            if (wOUT > wIN) {
+                currentPoint.in.get(0).weight = wOUT - wIN + currentPoint.in.get(0).weight;
+            }
+
+        }
     }
 
     private void regularisation() {
+
     }
 
-    private void edgePositioning() {
+    private void addEdgesToPoints() {
         for (Edge currEdge : edg) {
             addEdgeStart(currEdge);
             addEdgeEnd(currEdge);
@@ -30,7 +57,7 @@ class Model {
 
     private void addEdgeEnd(Edge currEdge) {
         int index = binaryEdgeSearch(currEdge, false);
-        currEdge.getStart().in.add(index, currEdge);
+        currEdge.getEnd().in.add(index, currEdge);
     }
 
     private void addEdgeStart(Edge currEdge) {
@@ -42,22 +69,23 @@ class Model {
         ArrayList<Edge> edges;
         int rightBorder;
         int leftBorder = 0;
-        Point chechingPoint;
+        Point checkingPoint;
         if (isStart) {
             edges = currEdge.getStart().out;
-            chechingPoint = currEdge.getEnd();
+            checkingPoint = currEdge.getEnd();
         } else {
             edges = currEdge.getEnd().in;
-            chechingPoint = currEdge.getStart();
+            checkingPoint = currEdge.getStart();
         }
         if (edges.isEmpty()) return 0;
-        rightBorder = edges.size();
+        rightBorder = edges.size()-1;
 
         while (rightBorder - leftBorder > 1) {
             Point middle;
             if (isStart) middle = edges.get((rightBorder + leftBorder) / 2).getEnd();
             else middle = edges.get((rightBorder + leftBorder) / 2).getStart();
-            if (chechingPoint.getX() < middle.getX()) {
+
+            if (checkingPoint.getX() < middle.getX()) {
                 rightBorder = (rightBorder + leftBorder) / 2;
             } else {
                 leftBorder = (rightBorder + leftBorder) / 2;
@@ -66,11 +94,13 @@ class Model {
         Point foundPoint;
         if (isStart) foundPoint = edges.get(rightBorder).getEnd();
         else foundPoint = edges.get(rightBorder).getStart();
-        if (foundPoint.getX() > chechingPoint.getX() && rightBorder - leftBorder == 1) {
+
+        if (foundPoint.getX() > checkingPoint.getX() && rightBorder - leftBorder == 1) {
             if (isStart) foundPoint = edges.get(leftBorder).getEnd();
             else foundPoint = edges.get(leftBorder).getStart();
         }
-        if (foundPoint.getX() > chechingPoint.getX()) {
+
+        if (foundPoint.getX() > checkingPoint.getX()) {
             return rightBorder;
         } else {
             return rightBorder + 1;

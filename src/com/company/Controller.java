@@ -1,6 +1,5 @@
 package com.company;
 
-
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
@@ -9,13 +8,15 @@ import java.util.Collections;
 public class Controller {
     private Model model;
 
-    void add(Point p) {
+    void addPoint(Point p) {
         model.points.add(p);
     }
 
     void sortPoints() {
         Collections.sort(model.points);
-        System.out.println(model.points);
+        for (int i = 0; i < model.points.size(); i++ ) {
+            model.points.get(i).arrayNumber = i;
+        }
     }
 
     public ArrayList<Point> getPoints() {
@@ -27,11 +28,12 @@ public class Controller {
     }
 
     void addEdge(int l, int r) {                                                 //check for unic
-        if (l<r)  model.addEdge(l,r);
-        else{
+        if (l < r)  model.addEdge(l,r);
+        else if (l > r) {
             model.addEdge(r,l);
-        }
+        } else return;
     }
+
     void start() {
             model.start();
     }
@@ -47,19 +49,38 @@ public class Controller {
         Controller controller = new Controller();
         controller.model = new Model();
 
+        testCase1(controller);
+
         Drawer drawer = new Drawer(controller);
         frame.add(drawer);
         frame.setVisible(true);
     }
 
-    //TODO
-    public void regularize() { }
+    private static void testCase1(Controller controller) {
+        controller.addPoint(new Point(100, 300));
+        controller.addPoint(new Point(220, 120));
+        controller.addPoint(new Point(220, 220));
+        controller.addPoint(new Point(330, 400));
+        controller.addPoint(new Point(150, 80));
+        controller.addPoint(new Point(400, 150));
 
-    public void makeChainsAndTree() {
+        controller.sortPoints();
 
+        controller.addEdge(0, 1);
+        controller.addEdge(0, 2);
+        controller.addEdge(0, 4);
+        controller.addEdge(4, 5);
+        controller.addEdge(3, 5);
+        controller.addEdge(1,3);
+        controller.addEdge(5, 2);
+        controller.addEdge(1, 2);
+        controller.addEdge(1, 4);
+        controller.addEdge(1, 5);
     }
 
+
     public void locatePoint(Point p) {
+
     }
 }
 

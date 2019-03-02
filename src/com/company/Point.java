@@ -7,6 +7,7 @@ public class Point implements Comparable<Point> {
     private int y;
     ArrayList<Edge> in;
     ArrayList<Edge> out;
+    int arrayNumber = -1;
 
     public int getX() {
         return x;
@@ -33,7 +34,23 @@ public class Point implements Comparable<Point> {
 
     @Override
     public String toString() {
-        return "Point{" + "x=" + x + ", y=" + y + "}\n";
+        String inStr, outStr;
+        if (out.isEmpty())
+            outStr = "EMPTY";
+        else
+            outStr = out.toString();
+
+        if (this.in.isEmpty())
+            inStr = "EMPTY";
+        else
+            inStr = in.toString();
+
+        return "Point#" + arrayNumber + "{" +
+                "x=" + x +
+                ", y=" + y +
+                ", in=" + inStr +
+                ", out=" + outStr +
+                "}\n\n";
     }
 
     @Override
