@@ -1,10 +1,12 @@
 package com.company;
 
 import java.util.ArrayList;
+import java.util.function.BiFunction;
 
 class Model {
     ArrayList<Point> points = new ArrayList<>();
     ArrayList<Edge> edg = new ArrayList<>();
+    ArrayList<Chain> chains = new ArrayList<>();
 
     void addEdge(int start, int end) {
         Point startPoint = points.get(start);
@@ -61,7 +63,7 @@ class Model {
         status.addAll(points.get(points.size() - 1).in);
         for (int i = points.size() - 2; i >= 0; i--) {
             Point currPoint = points.get(i);
-            int index = binaryPointSearch(currPoint, status);
+            int index = binaryPointSearch(currPoint, status, this::rightSideCheck);
             if (currPoint.out.isEmpty()) {
                 addEdge(currPoint, closestTopPoint(status, index));
             }
@@ -77,7 +79,7 @@ class Model {
         status.addAll(points.get(0).out);
         for (int i = 1; i < points.size(); i++) {
             Point currPoint = points.get(i);
-            int index = binaryPointSearch(currPoint, status);
+            int index = binaryPointSearch(currPoint, status, this::rightSideCheck);
             if (currPoint.in.isEmpty()) {
                 addEdge(closestBotPoint(status, index), currPoint);
             }
@@ -115,12 +117,12 @@ class Model {
 
 
     private void addEdgeEnd(Edge currEdge) {
-        int index = binaryPointSearch(middlePoint(currEdge), currEdge.getEnd().in);
+        int index = binaryPointSearch(middlePoint(currEdge), currEdge.getEnd().in, this::rightSideCheck);
         currEdge.getEnd().in.add(index, currEdge);
     }
 
     private void addEdgeStart(Edge currEdge) {
-        int index = binaryPointSearch(middlePoint(currEdge), currEdge.getStart().out);
+        int index = binaryPointSearch(middlePoint(currEdge), currEdge.getStart().out, this::rightSideCheck);
         currEdge.getStart().out.add(index, currEdge);
     }
 
@@ -130,7 +132,7 @@ class Model {
         return new Point(pointX, pointY);
     }
 
-    private int binaryPointSearch(Point checkingPoint, ArrayList<Edge> edges) {
+    private int binaryPointSearch(Point checkingPoint, ArrayList<Edge> edges, BiFunction<Point, Edge, Boolean> comp) {
 
         int rightBorder;
         int leftBorder = 0;
@@ -140,7 +142,7 @@ class Model {
         while (rightBorder - leftBorder > 1) {
             Edge middle;
             middle = edges.get((rightBorder + leftBorder) / 2);
-            if (rightSideCheck(checkingPoint, middle))
+            if (comp.apply(checkingPoint, middle))
                 leftBorder = (rightBorder + leftBorder) / 2;
             else
                 rightBorder = (rightBorder + leftBorder) / 2;
@@ -148,17 +150,24 @@ class Model {
 
         Edge rightEdge = edges.get(rightBorder);
 
-        if (rightSideCheck(checkingPoint, rightEdge))
-            return rightBorder + 1;
+        if (comp.apply(checkingPoint, rightEdge))
+            return rightBorder + 1;                                 // size() check endpoint
         else {
             Edge leftEdge = edges.get(leftBorder);
-            if (rightSideCheck(checkingPoint, leftEdge))
+            if (comp.apply(checkingPoint, leftEdge))
                 return leftBorder + 1;
             else
                 return leftBorder;
         }
 
 
+    }
+
+    private boolean topCheck(Point checkingPoint, Edge edge) {
+        Point startPoint = edge.getStart();
+        Point endPoint = edge.getEnd();
+        if (checkingPoint.getY() > endPoint.getY()) return true;
+        return false;
     }
 
     private boolean rightSideCheck(Point checkingPoint, Edge edge) {
