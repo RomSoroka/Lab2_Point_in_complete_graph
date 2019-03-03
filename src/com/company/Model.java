@@ -11,11 +11,18 @@ class Model {
         Point endPoint = points.get(end);
         Edge e = new Edge(startPoint, endPoint);
         edg.add(e);
+        addEdgeStart(e);
+        addEdgeEnd(e);
     }
 
+    void addEdge(Point startPoint, Point endPoint) {
+        Edge e = new Edge(startPoint, endPoint);
+        edg.add(e);
+        addEdgeStart(e);
+        addEdgeEnd(e);
+    }
 
     void start() {
-        addEdgesToPoints();
         regularisation();
         weightBalancing();
         System.out.println(points);
@@ -45,67 +52,120 @@ class Model {
     }
 
     private void regularisation() {
-
+        forwardMove();
+        backwardMove();
     }
 
-    private void addEdgesToPoints() {
-        for (Edge currEdge : edg) {
-            addEdgeStart(currEdge);
-            addEdgeEnd(currEdge);
+    private void backwardMove() {
+        ArrayList<Edge> status = new ArrayList<>();
+        status.addAll(points.get(points.size() - 1).in);
+        for (int i = points.size() - 2; i >= 0; i--) {
+            Point currPoint = points.get(i);
+            int index = binaryPointSearch(currPoint, status);
+            if (currPoint.out.isEmpty()) {
+                addEdge(currPoint, closestTopPoint(status, index));
+            }
+            for (Edge e : currPoint.in)
+                status.add(index, e);
+            for (Edge e : currPoint.out)
+                status.remove(e);
         }
     }
 
+    private void forwardMove() {
+        ArrayList<Edge> status = new ArrayList<>();
+        status.addAll(points.get(0).out);
+        for (int i = 1; i < points.size(); i++) {
+            Point currPoint = points.get(i);
+            int index = binaryPointSearch(currPoint, status);
+            if (currPoint.in.isEmpty()) {
+                addEdge(closestBotPoint(status, index), currPoint);
+            }
+            for (Edge e : currPoint.out)
+                status.add(index, e);
+            for (Edge e : currPoint.in)
+                status.remove(e);
+        }
+    }
+
+    private Point closestBotPoint(ArrayList<Edge> status, int index) {
+        Point leftPoint, rightPoint;
+        if (index == 0) return status.get(index).getStart();
+        if (index == status.size()) return status.get(index - 1).getStart();
+        leftPoint = status.get(index - 1).getStart();
+        rightPoint = status.get(index).getStart();
+        if (rightPoint.getY() < leftPoint.getY())
+            return leftPoint;
+        else
+            return rightPoint;
+    }
+
+    private Point closestTopPoint(ArrayList<Edge> status, int index) {
+        Point leftPoint, rightPoint;
+        if (index == 0) return status.get(index).getEnd();
+        if (index == status.size()) return status.get(index - 1).getEnd();
+        leftPoint = status.get(index - 1).getEnd();
+        rightPoint = status.get(index).getEnd();
+        if (rightPoint.getY() > leftPoint.getY())
+            return leftPoint;
+        else
+            return rightPoint;
+
+    }
+
+
     private void addEdgeEnd(Edge currEdge) {
-        int index = binaryEdgeSearch(currEdge, false);
+        int index = binaryPointSearch(middlePoint(currEdge), currEdge.getEnd().in);
         currEdge.getEnd().in.add(index, currEdge);
     }
 
     private void addEdgeStart(Edge currEdge) {
-        int index = binaryEdgeSearch(currEdge, true);
+        int index = binaryPointSearch(middlePoint(currEdge), currEdge.getStart().out);
         currEdge.getStart().out.add(index, currEdge);
     }
 
-    private int binaryEdgeSearch(Edge currEdge, boolean isStart) {
-        ArrayList<Edge> edges;
+    private Point middlePoint(Edge currEdge) {
+        int pointX = (currEdge.getEnd().getX() + currEdge.getStart().getX()) / 2;
+        int pointY = (currEdge.getStart().getY() + currEdge.getEnd().getY()) / 2;
+        return new Point(pointX, pointY);
+    }
+
+    private int binaryPointSearch(Point checkingPoint, ArrayList<Edge> edges) {
+
         int rightBorder;
         int leftBorder = 0;
-        Point checkingPoint;
-        if (isStart) {
-            edges = currEdge.getStart().out;
-            checkingPoint = currEdge.getEnd();
-        } else {
-            edges = currEdge.getEnd().in;
-            checkingPoint = currEdge.getStart();
-        }
         if (edges.isEmpty()) return 0;
-        rightBorder = edges.size()-1;
+        rightBorder = edges.size() - 1;
 
         while (rightBorder - leftBorder > 1) {
-            Point middle;
-            if (isStart) middle = edges.get((rightBorder + leftBorder) / 2).getEnd();
-            else middle = edges.get((rightBorder + leftBorder) / 2).getStart();
-
-            if (checkingPoint.getX() < middle.getX()) {
-                rightBorder = (rightBorder + leftBorder) / 2;
-            } else {
+            Edge middle;
+            middle = edges.get((rightBorder + leftBorder) / 2);
+            if (rightSideCheck(checkingPoint, middle))
                 leftBorder = (rightBorder + leftBorder) / 2;
-            }
-        }
-        Point foundPoint;
-        if (isStart) foundPoint = edges.get(rightBorder).getEnd();
-        else foundPoint = edges.get(rightBorder).getStart();
-
-        if (foundPoint.getX() > checkingPoint.getX() && rightBorder - leftBorder == 1) {
-            if (isStart) foundPoint = edges.get(leftBorder).getEnd();
-            else foundPoint = edges.get(leftBorder).getStart();
+            else
+                rightBorder = (rightBorder + leftBorder) / 2;
         }
 
-        if (foundPoint.getX() > checkingPoint.getX()) {
-            return rightBorder;
-        } else {
+        Edge rightEdge = edges.get(rightBorder);
+
+        if (rightSideCheck(checkingPoint, rightEdge))
             return rightBorder + 1;
+        else {
+            Edge leftEdge = edges.get(leftBorder);
+            if (rightSideCheck(checkingPoint, leftEdge))
+                return leftBorder + 1;
+            else
+                return leftBorder;
         }
 
+
+    }
+
+    private boolean rightSideCheck(Point checkingPoint, Edge edge) {
+        Point startPoint = edge.getStart();
+        Point endPoint = edge.getEnd();
+        return ((endPoint.getX() - startPoint.getX()) * (checkingPoint.getY() - startPoint.getY())
+                / (endPoint.getY() - startPoint.getY()) + startPoint.getX()) < checkingPoint.getX();
     }
 
 }

@@ -1,5 +1,6 @@
 package com.company;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -7,22 +8,20 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
-import javax.swing.*;
-
 public class Drawer extends JPanel {
-    Controller controller;
+    private Controller controller;
     private boolean isPointCheckModeFlag = false;
     private boolean isPointInside = false;
     private Point circle;
     private int diametr = 5;
-    private ArrayList<Point> arrPoints = new ArrayList<Point>();
+    private ArrayList<Point> arrPoints = new ArrayList<>();
 
-    DrawState state = DrawState.PLACE_POINTS;
+    private DrawState state = DrawState.PLACE_POINTS;
 
     JTextField left;
     JTextField right;
 
-    public Drawer(Controller controller) {
+    Drawer(Controller controller) {
         this.controller = controller;
         this.setLayout(null);
 
@@ -149,9 +148,10 @@ public class Drawer extends JPanel {
         boolean c = false;
         for (int i = 0, j = arrPoints.size() - 1; i < arrPoints.size(); j = i++) {
             int yi = arrPoints.get(i).getY();
-            if (
-
-                    (((arrPoints.get(i).getY() <= circle.getY()) && (circle.getY() < arrPoints.get(j).getY())) || ((arrPoints.get(j).getY() <= circle.getY()) && (circle.getY() < arrPoints.get(i).getY()))) && (((arrPoints.get(j).getX() - arrPoints.get(i).getX()) * (circle.getY() - arrPoints.get(i).getY()) / (arrPoints.get(j).getY() - arrPoints.get(i).getY()) + arrPoints.get(i).getX()) < circle.getX()))
+            if ((((arrPoints.get(i).getY() <= circle.getY()) && (circle.getY() < arrPoints.get(j).getY()))
+                    || ((arrPoints.get(j).getY() <= circle.getY()) && (circle.getY() < arrPoints.get(i).getY())))
+                    && (((arrPoints.get(j).getX() - arrPoints.get(i).getX()) * (circle.getY() - arrPoints.get(i).getY())
+                    / (arrPoints.get(j).getY() - arrPoints.get(i).getY()) + arrPoints.get(i).getX()) < circle.getX()))
                 c = !c;
         }
         return c;
