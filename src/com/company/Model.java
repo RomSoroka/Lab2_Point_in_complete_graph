@@ -23,12 +23,32 @@ class Model {
     }
 
     void start() {
-        System.out.println(edg);
-        System.out.println(points);
         regularisation();
-        System.out.println("====After=====");
-        System.out.println(edg);
+        weightBalancing();
         System.out.println(points);
+    }
+
+    private void weightBalancing() {
+        //Top to bottom
+        for (int i = 1; i < points.size() - 1; i++) {
+            Point currentPoint = points.get(i);
+            int wIN = currentPoint.in.stream().mapToInt(edg -> edg.weight).sum();
+            int vOUT = currentPoint.out.size();
+            if (wIN > vOUT) {
+                currentPoint.out.get(0).weight = wIN - vOUT + 1;
+            }
+        }
+
+        //Bottom to top
+        for (int i = points.size() - 2; i > 0; i--) {
+            Point currentPoint = points.get(i);
+            int wOUT = currentPoint.out.stream().mapToInt(edg -> edg.weight).sum();
+            int wIN = currentPoint.in.stream().mapToInt(edg -> edg.weight).sum();
+            if (wOUT > wIN) {
+                currentPoint.in.get(0).weight = wOUT - wIN + currentPoint.in.get(0).weight;
+            }
+
+        }
     }
 
     private void regularisation() {
