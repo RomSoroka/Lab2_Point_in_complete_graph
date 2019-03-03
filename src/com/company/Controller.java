@@ -74,6 +74,7 @@ public class Controller {
         else if (l > r) {
             model.addEdge(r, l);
         }
+    }
 
 
     public void locatePoint(Point p) {
