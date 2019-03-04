@@ -27,7 +27,32 @@ class Model {
     void start() {
         regularisation();
         weightBalancing();
-        System.out.println(points);
+        createChains();
+        System.out.println(chains);
+    }
+
+    private void createChains() {
+        Point startingPoint = points.get(0);
+        Edge rightmostEdge = startingPoint.out.get(startingPoint.out.size() - 1);
+        while (rightmostEdge.weight != 0) {
+            Chain currChain = new Chain();
+            Point currPoint = points.get(0);
+            while (currPoint != points.get(points.size() - 1)) {
+                int i = 0;
+                while (i < currPoint.out.size()) {
+                    Edge currEdge = currPoint.out.get(i);
+                    if (currEdge.weight > 0) {
+                        currChain.edges.add(currEdge);
+                        currEdge.weight--;
+                        currPoint = currEdge.getEnd();
+                        break;
+                    } else {
+                        i++;
+                    }
+                }
+            }
+            chains.add(currChain);
+        }
     }
 
     private void weightBalancing() {
