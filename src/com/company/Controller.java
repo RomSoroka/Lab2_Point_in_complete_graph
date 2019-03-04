@@ -78,6 +78,7 @@ public class Controller {
 
 
     public void locatePoint(Point p) {
+        model.localisation(p);
 
     }
 }

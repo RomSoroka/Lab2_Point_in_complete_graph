@@ -6,7 +6,7 @@ public class Edge {
     private Point start;
     private Point end;
     int weight;
-    Color color;
+    Color color = Color.ORANGE;
 
     @Override
     public String toString() {

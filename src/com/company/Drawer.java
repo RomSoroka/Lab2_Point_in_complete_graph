@@ -12,7 +12,7 @@ public class Drawer extends JPanel {
     private Controller controller;
     private boolean isPointCheckModeFlag = false;
     private boolean isPointInside = false;
-    private Point circle;
+    private Point localisationPoint;
     private int diametr = 5;
     private ArrayList<Point> arrPoints = new ArrayList<>();
 
@@ -37,16 +37,18 @@ public class Drawer extends JPanel {
             @Override
             public void mouseClicked(MouseEvent e) {
                 int x, y;
-                if (!isPointCheckModeFlag) {
+                if (state == DrawState.PLACE_POINTS) {
                     x = e.getX();
                     y = e.getY();
                     Point p = new Point(x, y);
                     controller.addPoint(p);
-                } else {
+                }
+                if (state == DrawState.LOCALIZATION) {
                     x = e.getX();
                     y = e.getY();
-                    circle = new Point(x, y);
-                    isPointInside = pnpoly();
+                    localisationPoint = new Point(x, y);
+                    resetEdgesColor();
+                    controller.locatePoint(localisationPoint);
                 }
                 repaint();
             }
@@ -62,10 +64,18 @@ public class Drawer extends JPanel {
         for (Point p : points) {
             g.fillOval(p.getX() - diametr / 2 ,p.getY() - diametr / 2, diametr, diametr);
         }
+        if (localisationPoint != null)
+            g.fillOval(localisationPoint.getX() - diametr / 2, localisationPoint.getY() - diametr / 2, diametr, diametr);
         drawGraph(g);
     }
 
     /* ---------------PRIVTE FUNCTIONS----------------- */
+    private void resetEdgesColor() {
+        ArrayList<Edge> edges = controller.getEdges();
+        for (Edge edge : edges) {
+            edge.color = Color.ORANGE;
+        }
+    }
 
     private void addStartButton(Controller controller) {
         JButton startButton = new JButton("Start");
@@ -74,11 +84,13 @@ public class Drawer extends JPanel {
         ActionListener startAction = (ActionEvent e) -> {
             {
                 controller.start();
+                state = DrawState.LOCALIZATION;
                 repaint();
             }
         };
         startButton.addActionListener(startAction);
         this.add(startButton);
+
     }
 
     private void addNewEdgeButton(Controller controller) {
@@ -126,7 +138,7 @@ public class Drawer extends JPanel {
                 panel.add(l);
             }
 
-            isPointCheckModeFlag = true;
+
             repaint();
 
         };
@@ -137,14 +149,14 @@ public class Drawer extends JPanel {
     private void drawGraph(Graphics g) {
         ArrayList<Edge> edges = controller.getEdges();
         for (Edge currEdge : edges) {
-            g.setColor(Color.ORANGE);
+            g.setColor(currEdge.color);
             g.drawLine(currEdge.getStart().getX(), currEdge.getStart().getY(),
                     currEdge.getEnd().getX(), currEdge.getEnd().getY());
         }
 
     }
 
-    private boolean pnpoly() {
+    /*private boolean pnpoly() {
         boolean c = false;
         for (int i = 0, j = arrPoints.size() - 1; i < arrPoints.size(); j = i++) {
             int yi = arrPoints.get(i).getY();
@@ -155,7 +167,7 @@ public class Drawer extends JPanel {
                 c = !c;
         }
         return c;
-    }
+    }*/
 
 
 }

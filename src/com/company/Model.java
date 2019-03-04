@@ -1,5 +1,6 @@
 package com.company;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.function.BiFunction;
 
@@ -155,6 +156,63 @@ class Model {
         int pointX = (currEdge.getEnd().getX() + currEdge.getStart().getX()) / 2;
         int pointY = (currEdge.getStart().getY() + currEdge.getEnd().getY()) / 2;
         return new Point(pointX, pointY);
+    }
+
+    void localisation(Point chillingPoint) {
+        System.out.println("Entry");
+        int rightBorder;
+        int leftBorder = 0;
+        if (chains.isEmpty()) return;
+        rightBorder = chains.size() - 1;
+        while (rightBorder - leftBorder > 1) {
+            boolean isAlRight;
+            Chain middle = chains.get((rightBorder + leftBorder) / 2);
+            isAlRight = chainsRightCheck(chillingPoint, middle);
+            if (isAlRight) {
+                for (Edge tempEdge : middle.edges)
+                    tempEdge.color = Color.RED;
+                leftBorder = (rightBorder + leftBorder) / 2;
+            } else {
+                for (Edge tempEdge : middle.edges)
+                    tempEdge.color = Color.GREEN;
+                rightBorder = (rightBorder + leftBorder) / 2;
+            }
+        }
+        if (leftBorder == 0) {
+            Chain left = chains.get(leftBorder);
+            if (chainsRightCheck(chillingPoint, left)) {
+                for (Edge tempEdge : left.edges)
+                    tempEdge.color = Color.RED;
+            } else {
+                for (Edge tempEdge : left.edges)
+                    tempEdge.color = Color.GREEN;
+            }
+        } else if (rightBorder == chains.size() - 1) {
+            Chain right = chains.get(rightBorder);
+            if (chainsRightCheck(chillingPoint, right)) {
+                for (Edge tempEdge : right.edges)
+                    tempEdge.color = Color.RED;
+            } else {
+                for (Edge tempEdge : right.edges)
+                    tempEdge.color = Color.GREEN;
+            }
+        }
+        System.out.println("Exit");
+    }
+
+    private boolean chainsRightCheck(Point chillingPoint, Chain middle) {
+        boolean isAlRight;
+        int edgeNum = binaryPointSearch(chillingPoint, middle.edges, this::topCheck);
+        if (edgeNum == middle.edges.size())
+            isAlRight = middle.edges.get(middle.edges.size() - 1).getEnd().getX() < chillingPoint.getX();
+        else {
+            Edge currEdge = middle.edges.get(edgeNum);
+            if (edgeNum == 0 && currEdge.getStart().getY() > chillingPoint.getY()) {
+                isAlRight = currEdge.getStart().getX() < chillingPoint.getX();
+            } else
+                isAlRight = rightSideCheck(chillingPoint, currEdge);
+        }
+        return isAlRight;
     }
 
     private int binaryPointSearch(Point checkingPoint, ArrayList<Edge> edges, BiFunction<Point, Edge, Boolean> comp) {
