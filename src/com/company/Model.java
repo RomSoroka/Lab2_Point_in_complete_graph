@@ -179,25 +179,23 @@ class Model {
             }
         }
         if (leftBorder == 0) {
-            Chain left = chains.get(leftBorder);
-            if (chainsRightCheck(chillingPoint, left)) {
-                for (Edge tempEdge : left.edges)
-                    tempEdge.color = Color.RED;
-            } else {
-                for (Edge tempEdge : left.edges)
-                    tempEdge.color = Color.GREEN;
-            }
-        } else if (rightBorder == chains.size() - 1) {
-            Chain right = chains.get(rightBorder);
-            if (chainsRightCheck(chillingPoint, right)) {
-                for (Edge tempEdge : right.edges)
-                    tempEdge.color = Color.RED;
-            } else {
-                for (Edge tempEdge : right.edges)
-                    tempEdge.color = Color.GREEN;
-            }
+            lastPerforms(chillingPoint, leftBorder);
+        }
+        if (rightBorder == chains.size() - 1) {
+            lastPerforms(chillingPoint, rightBorder);
         }
         System.out.println("Exit");
+    }
+
+    private void lastPerforms(Point chillingPoint, int leftBorder) {
+        Chain left = chains.get(leftBorder);
+        if (chainsRightCheck(chillingPoint, left)) {
+            for (Edge tempEdge : left.edges)
+                tempEdge.color = Color.RED;
+        } else {
+            for (Edge tempEdge : left.edges)
+                tempEdge.color = Color.GREEN;
+        }
     }
 
     private boolean chainsRightCheck(Point chillingPoint, Chain middle) {

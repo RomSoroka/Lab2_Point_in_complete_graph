@@ -62,7 +62,7 @@ public class Controller {
         Controller controller = new Controller();
         controller.model = new Model();
 
-        testCase1(controller);
+        //   testCase1(controller);
 
         Drawer drawer = new Drawer(controller);
         frame.add(drawer);
